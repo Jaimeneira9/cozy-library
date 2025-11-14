@@ -15,9 +15,12 @@ public class Libro {
     private long id;
     private String titulo;
     private String urlPortada;
-    private int anyoPublicacion;
+    private int anioPublicacion;
 
     @OneToMany(mappedBy = "libro")
     private List<AutorLibro> autores;
+
+    @OneToMany(mappedBy = "libro")
+    private List<Resenia> resenias;
 
 }

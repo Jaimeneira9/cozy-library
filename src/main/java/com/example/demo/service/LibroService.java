@@ -1,12 +1,14 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Autor;
-import com.example.demo.model.AutorLibro;
-import com.example.demo.model.Libro;
+import com.example.demo.model.*;
 import com.example.demo.modelDTO.LibroRequestDTO;
+import com.example.demo.modelDTO.ReseniaRequestDTO;
 import com.example.demo.repository.AutorRepository;
 import com.example.demo.repository.LibroRepository;
+import com.example.demo.repository.ReseniaRepository;
+import com.example.demo.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,16 +20,27 @@ public class LibroService {
     private LibroRepository libroRepository;
     private AutorRepository autorRepository;
 
-    public LibroService(LibroRepository libroRepository,AutorRepository autorRepository){
+    private UsuarioRepository usuarioRepository;
+
+    public LibroService(LibroRepository libroRepository
+                        ,AutorRepository autorRepository
+                        ,UsuarioRepository usuarioRepository){
         this.libroRepository=libroRepository;
         this.autorRepository=autorRepository;
+        this.usuarioRepository=usuarioRepository;
     }
+
     public LibroRequestDTO mapToRequestDTO(Libro libro){
+            List<AutorLibro> autoresLibro = libro.getAutores();
+            List<String> nombreAutores = new ArrayList<>();
+            for(AutorLibro autorLibro:autoresLibro){
+                nombreAutores.add(autorLibro.getAutor().getNombre());
+            }
         return LibroRequestDTO.builder()
                 .titulo(libro.getTitulo())
-                .anyoPublicacion(libro.getAnyoPublicacion())
+                .anyoPublicacion(libro.getAnioPublicacion())
                 .urlPortada(libro.getUrlPortada())
-                .autores(libro.getAutores())
+                .autores(nombreAutores)
                 .build();
     }
     public List<LibroRequestDTO> convertirListaDTO(List<Libro> libros){
@@ -37,8 +50,9 @@ public class LibroService {
     }
 
     //Mostrar todos los libros por autor
+    @Transactional(readOnly = true)
     public List<LibroRequestDTO> getLibroPorAutor(String nombreAutor){
-        Optional<Autor> autorOpcional = autorRepository.findByNombre(nombreAutor);
+        Optional<Autor> autorOpcional = autorRepository.findByNombreContainingIgnoreCase(nombreAutor);
 
         if (autorOpcional.isPresent()){
             Autor autorExiste = autorOpcional.get();
@@ -52,4 +66,27 @@ public class LibroService {
 
 
     }
+    //Mostrar libros por titulo
+    @Transactional(readOnly = true)
+    public List<LibroRequestDTO> getLibroPorTitulo(String titulo){
+        Optional<List<Libro>> librosOpcionales = libroRepository.findByTituloContainingIgnoreCase(titulo);
+        if(librosOpcionales.isPresent()){
+            List<Libro> librosExistentes = librosOpcionales.get();
+            return convertirListaDTO(librosExistentes);
+        }else return null;
+
+
+    }
+    //Mostrar libros por añoPublicacion
+    @Transactional(readOnly = true)
+    public List<LibroRequestDTO> getLibroPorAnioPublicacion(int anioPublicacion){
+        Optional<List<Libro>> librosOpcionales = libroRepository.findByAnioPublicacion(anioPublicacion);
+        if(librosOpcionales.isPresent()){
+            List<Libro> librosExistentes = librosOpcionales.get();
+            return convertirListaDTO(librosExistentes);
+        }else return null;
+
+
+    }
+
 }
