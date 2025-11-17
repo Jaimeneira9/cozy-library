@@ -15,46 +15,36 @@ import java.util.Optional;
 
 @Service
 public class ReseniaService {
-    private LibroRepository libroRepository;
-    private AutorRepository autorRepository;
-    private ReseniaRepository reseniaRepository;
-    private UsuarioRepository usuarioRepository;
 
-    public ReseniaService(LibroRepository libroRepository
-            ,AutorRepository autorRepository
-            ,UsuarioRepository usuarioRepository
-            ,ReseniaRepository reseniaRepository){
-        this.libroRepository=libroRepository;
-        this.autorRepository=autorRepository;
-        this.usuarioRepository=usuarioRepository;
-        this.reseniaRepository=reseniaRepository;
+    private final LibroRepository libroRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ReseniaRepository reseniaRepository;
+
+    public ReseniaService(LibroRepository libroRepository,
+                          UsuarioRepository usuarioRepository,
+                          ReseniaRepository reseniaRepository) {
+        this.libroRepository = libroRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.reseniaRepository = reseniaRepository;
     }
-    public Resenia mapFromDTOTOResenia(ReseniaRequestDTO reseniaRequestDTO){
 
-        Optional<Libro> libroOptional = libroRepository.findByTituloAndAutorContainingIgnoreCase(reseniaRequestDTO.getTituloLibro(),reseniaRequestDTO.getNombreAutor());
-        Optional<Usuario> usuarioOptional = usuarioRepository.findByNombreContainingIgnoreCase(reseniaRequestDTO.getNombreUsuario());
-
-        if(libroOptional.isPresent()&&usuarioOptional.isPresent()){
-
-            Resenia resenia = new Resenia();
-            resenia.setLibro(libroOptional.get());
-            resenia.setUsuario(usuarioOptional.get());
-            resenia.setComentario(reseniaRequestDTO.getComentario());
-            resenia.setFecha(reseniaRequestDTO.getFecha());
-            resenia.setValoracion(reseniaRequestDTO.getValoracion());
-
-            return resenia;
-        }else return null;
-    }
-    //Crear Reseña
     @Transactional
-    public String postResenia(ReseniaRequestDTO reseniaRequestDTO){
-        if(mapFromDTOTOResenia(reseniaRequestDTO)!=null){
-            reseniaRepository.save(mapFromDTOTOResenia(reseniaRequestDTO));
-            return "Reseña creada con exito";
-        }else{
-            return "Ha habido un fallo creando la reseña";
-        }
+    public Resenia crearResenia(Long idLibro, ReseniaRequestDTO dto) {
 
+        Libro libro = libroRepository.findById(idLibro)
+                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+
+        Usuario usuario = usuarioRepository.findByNombreContainingIgnoreCase(dto.getNombreUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Resenia resenia = new Resenia();
+        resenia.setLibro(libro);
+        resenia.setUsuario(usuario);
+        resenia.setComentario(dto.getComentario());
+        resenia.setFecha(dto.getFecha());
+        resenia.setValoracion(dto.getValoracion());
+
+        return reseniaRepository.save(resenia);
     }
 }
+
