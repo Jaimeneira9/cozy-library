@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface ReseniaRepository extends JpaRepository<Resenia,Long> {
-    Optional<List<Resenia>> findByNombreUsuario(String nombreUsuario);
-    Optional<List<Resenia>> findByNombreLibro(String nombreLibro);
+    Optional<List<Resenia>> findByUsuarioId(long id);
+    Optional<List<Resenia>> findByLibroId(long id);
 }

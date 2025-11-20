@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.example.demo.model.compositePK.ListaLibro;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +23,8 @@ public class Libro {
 
     @OneToMany(mappedBy = "libro")
     private List<Resenia> resenias;
+
+    @OneToMany(mappedBy = "libro")
+    private List<ListaLibro> listas;
 
 }

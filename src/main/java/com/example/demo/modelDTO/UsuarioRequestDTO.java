@@ -6,4 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class UsuarioRequestDTO {
+    private String nombre;
 }
