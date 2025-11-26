@@ -42,10 +42,10 @@ public class UsuarioService {
 
     //Eliminar miUsuario
     @Transactional
-    public ResponseEntity<String> eliminarMiUsuario(long idUsuario){
+    public void eliminarMiUsuario(long idUsuario){
         usuarioRepository.deleteById(idUsuario);
         reseniaRepository.deleteByUsuarioId(idUsuario);
-        return new ResponseEntity<>("Cuenta eliminada con éxito",HttpStatus.OK);
+        
     }
 }
 
