@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface ReseniaRepository extends JpaRepository<Resenia,Long> {
     Optional<List<Resenia>> findByUsuarioId(long id);
     Optional<List<Resenia>> findByLibroId(long id);
+    void deleteByUsuarioId(long id);
+    void deleteByLibroId(long id);
 }
