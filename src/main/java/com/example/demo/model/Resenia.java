@@ -7,9 +7,10 @@ import java.time.LocalDate;
 
 @Data
 @Entity
+@Table(name = "resenias")
 public class Resenia {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private double valoracion;
     private LocalDate fecha;

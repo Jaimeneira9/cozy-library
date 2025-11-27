@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 @Entity
+@Table(name = "autorLibro")
 @IdClass(AutorLibroId.class)
 public class AutorLibro {
     @Id

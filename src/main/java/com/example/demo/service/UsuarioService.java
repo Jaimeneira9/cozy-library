@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,6 +36,7 @@ public class UsuarioService {
     //Crear un Usuario
     @Transactional
     public ResponseEntity<Usuario> crearUsuario(Usuario usuario){
+        usuario.setFechaRegistro(LocalDateTime.now());
          usuarioRepository.save(usuario);
          return new ResponseEntity<>(usuario, HttpStatus.OK);
     }

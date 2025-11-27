@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class ListaLibro implements Serializable {
+public class ListaLibroId implements Serializable {
     private Long id_libro;
     private Long id_lista;
 }

@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import com.example.demo.model.compositePK.AmistadId;
+
 import com.example.demo.model.compositePK.SolicitaAmistad;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -10,10 +10,10 @@ import java.util.List;
 
 @Data
 @Entity
-
+@Table(name = "usuarios")
 public class Usuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nombre;
     private String contraseña;
