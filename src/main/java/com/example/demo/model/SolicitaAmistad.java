@@ -11,9 +11,10 @@ import java.time.LocalDate;
 
 @Data
 @Entity
+@Table(name = "solicita_amistad")
 public class SolicitaAmistad  {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
     @JoinColumn(name="solicitante_id")

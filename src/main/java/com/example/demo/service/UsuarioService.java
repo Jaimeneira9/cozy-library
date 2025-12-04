@@ -19,7 +19,9 @@ public class UsuarioService {
     }
     public UsuarioRequestDTO mapToRequestDTO(Usuario usuario){
         return UsuarioRequestDTO.builder()
-                .
+                .nombre(usuario.getNombre())
+                .fotoPerfil(usuario.getPathImagenPerfil())
+                .valoraciones(usuario.getResenias().size())
                 .build();
     }
     //Crear un Usuario
@@ -28,7 +30,7 @@ public class UsuarioService {
     }
 
     //Mostrar amigos
-    public List<UsuarioRequestDTO> mostrarAmigos(long idUsuario){
+    //public List<UsuarioRequestDTO> mostrarAmigos(long idUsuario){
 
-    }
+    //}
 }

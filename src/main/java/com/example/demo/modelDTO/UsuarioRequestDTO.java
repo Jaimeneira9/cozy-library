@@ -7,4 +7,7 @@ import lombok.Data;
 @Builder
 public class UsuarioRequestDTO {
     private String nombre;
+    private int valoraciones;
+    private String fotoPerfil;
+
 }

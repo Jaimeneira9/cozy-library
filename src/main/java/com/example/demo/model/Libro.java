@@ -1,17 +1,16 @@
 package com.example.demo.model;
 
-import com.example.demo.model.compositePK.ListaLibro;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 @Entity
+@Table(name = "libro")
 public class Libro {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_libro")
     private long id;
     private String titulo;

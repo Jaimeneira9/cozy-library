@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-import com.example.demo.model.compositePK.ListaLibro;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,9 +8,10 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "lista_lectura")
 public class ListaLectura {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate fechaCreacion;
     private String nombreLista;

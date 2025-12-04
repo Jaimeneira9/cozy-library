@@ -56,11 +56,10 @@ public class LibroService {
 
         if (autorOpcional.isPresent()){
             Autor autorExiste = autorOpcional.get();
-            List<AutorLibro> autorlibros = autorExiste.getLibros();
+            List<AutorLibro> autorLibros = autorExiste.getLibros();
             List<Libro> libros = new ArrayList<>();
-            for(AutorLibro autorLibro:autorlibros){
-                libros.add(autorLibro.getLibro());
-            }
+            autorLibros.forEach(autorLibro -> libros.add(autorLibro.getLibro()));
+
             return convertirListaDTO(libros);
         }else return null;
 
@@ -69,24 +68,19 @@ public class LibroService {
     //Mostrar libros por titulo
     @Transactional(readOnly = true)
     public List<LibroRequestDTO> getLibroPorTitulo(String titulo){
-        Optional<List<Libro>> librosOpcionales = libroRepository.findByTituloContainingIgnoreCase(titulo);
-        if(librosOpcionales.isPresent()){
-            List<Libro> librosExistentes = librosOpcionales.get();
-            return convertirListaDTO(librosExistentes);
-        }else return null;
+
+        List<Libro> libros = libroRepository.findByTituloContainingIgnoreCase(titulo);
+
+            return convertirListaDTO(libros);
+
 
 
     }
     //Mostrar libros por añoPublicacion
     @Transactional(readOnly = true)
     public List<LibroRequestDTO> getLibroPorAnioPublicacion(int anioPublicacion){
-        Optional<List<Libro>> librosOpcionales = libroRepository.findByAnioPublicacion(anioPublicacion);
-        if(librosOpcionales.isPresent()){
-            List<Libro> librosExistentes = librosOpcionales.get();
-            return convertirListaDTO(librosExistentes);
-        }else return null;
-
-
+        List<Libro> libros = libroRepository.findByAnioPublicacion(anioPublicacion);
+            return convertirListaDTO(libros);
     }
 
 
