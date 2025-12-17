@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "autorLibro")
 @IdClass(AutorLibroId.class)
+@Table(name = "autor_libro")
 public class AutorLibro {
     @Id
     @Column(name = "id_autor")

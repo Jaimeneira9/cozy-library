@@ -12,8 +12,12 @@ import java.time.LocalDate;
 public class Lectura {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
+    @Column(name = "porcentaje_leido")
     private double porcentajeLeido;
+    @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
+    @Column(name = "fecha_fin")
     private LocalDate fechaFin;
 }

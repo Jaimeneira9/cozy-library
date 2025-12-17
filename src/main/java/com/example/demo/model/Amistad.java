@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Table(name="amitades")
+
 public class Amistad {
     @EmbeddedId
     private AmistadId id;
@@ -20,6 +21,6 @@ public class Amistad {
     @ManyToOne
     @JoinColumn(name = "usuario2_id")
     private Usuario usuario2;
-
+    @Column(name = "fecha_amistad")
     private LocalDate fechaAmistad;
 }

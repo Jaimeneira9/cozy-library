@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+<<<<<<< HEAD
 import com.example.demo.model.compositePK.SolicitaAmistad;
 import com.example.demo.modelDTO.SolicitaAmistadRequestDTO;
 import com.example.demo.repository.SolicitaAmistadRepository;
@@ -52,4 +53,16 @@ public class SolicitaAmistadService {
         } return ResponseEntity.notFound().build();
 
     }
+=======
+import com.example.demo.repository.SolicitaAmistadRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SolicitaAmistadService {
+    private SolicitaAmistadRepository solicitaAmistadRepository;
+
+    public SolicitaAmistadService(SolicitaAmistadRepository solicitaAmistadRepository){
+        this.solicitaAmistadRepository=solicitaAmistadRepository;
+    }
+>>>>>>> e9bb205ffd7bb5bcb564a6a3591819a20b1c6b3e
 }

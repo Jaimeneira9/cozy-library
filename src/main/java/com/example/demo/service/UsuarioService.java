@@ -28,9 +28,14 @@ public class UsuarioService {
     public UsuarioRequestDTO mapToRequestDTO(Usuario usuario){
         return UsuarioRequestDTO.builder()
                 .nombre(usuario.getNombre())
+<<<<<<< HEAD
                 .email(usuario.getEmail())
                 .fechaRegistro(usuario.getFechaRegistro())
                 .pathImagenPerfil(usuario.getPathImagenPerfil())
+=======
+                .fotoPerfil(usuario.getPathImagenPerfil())
+                .valoraciones(usuario.getResenias().size())
+>>>>>>> e9bb205ffd7bb5bcb564a6a3591819a20b1c6b3e
                 .build();
     }
     //Crear un Usuario
@@ -41,6 +46,7 @@ public class UsuarioService {
          return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
 
+<<<<<<< HEAD
 
     //Eliminar miUsuario
     @Transactional
@@ -49,5 +55,11 @@ public class UsuarioService {
         reseniaRepository.deleteByUsuarioId(idUsuario);
         
     }
+=======
+    //Mostrar amigos
+    //public List<UsuarioRequestDTO> mostrarAmigos(long idUsuario){
+
+    //}
+>>>>>>> e9bb205ffd7bb5bcb564a6a3591819a20b1c6b3e
 }
 

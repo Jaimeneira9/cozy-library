@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import com.example.demo.model.compositePK.ListaLibroId;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,12 +9,18 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "listaLectura")
+
+@Table(name = "lista_lectura")
+
 public class ListaLectura {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Column(name = "id")
     private Long id;
+    @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion;
+    @Column(name = "nombre_lista")
     private String nombreLista;
 
     @ManyToOne

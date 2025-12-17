@@ -11,7 +11,11 @@ import java.time.LocalDate;
 
 @Data
 @Entity
+<<<<<<< HEAD
 @Table(name = "solicitudes")
+=======
+@Table(name = "solicita_amistad")
+>>>>>>> e9bb205ffd7bb5bcb564a6a3591819a20b1c6b3e
 public class SolicitaAmistad  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

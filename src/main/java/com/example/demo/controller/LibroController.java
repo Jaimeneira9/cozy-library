@@ -20,15 +20,15 @@ public class LibroController {
 
     @GetMapping("/libros/buscarPorAutor/{autor}")
     //Mostrar libros por autor
-    public List<LibroRequestDTO>  mostrarLibrosPorAutor(@PathVariable @RequestParam String nombreAutor){
+    public List<LibroRequestDTO>  mostrarLibrosPorAutor(@PathVariable  String nombreAutor){
         return libroService.getLibroPorAutor(nombreAutor);
     }//Mostrar libros por titulo
     @GetMapping("/libros/buscarPorTitulo/{titulo}")
-    public List<LibroRequestDTO>  mostrarLibrosPorTitulo(@PathVariable @RequestParam String titulo){
+    public List<LibroRequestDTO>  mostrarLibrosPorTitulo(@PathVariable  String titulo){
         return libroService.getLibroPorTitulo(titulo);
     }//Mostrar libros por anioPublicacion
-    @GetMapping("/libros/buscarPorTitulo/{anioPubliacion}")
-    public List<LibroRequestDTO>  mostrarLibrosPorAnioPublicacion(@PathVariable @RequestParam int anioPublicacion){
+    @GetMapping("/libros/buscarPorAnio/{anioPubliacion}")
+    public List<LibroRequestDTO>  mostrarLibrosPorAnioPublicacion(@PathVariable  int anioPublicacion){
         return libroService.getLibroPorAnioPublicacion(anioPublicacion);
     }
 }
