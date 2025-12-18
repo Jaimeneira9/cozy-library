@@ -9,13 +9,11 @@ import java.time.LocalDateTime;
 @Builder
 public class UsuarioRequestDTO {
     private String nombre;
-<<<<<<< HEAD
+
     private LocalDateTime fechaRegistro;
     private String email;
     private String pathImagenPerfil;
-=======
-    private int valoraciones;
-    private String fotoPerfil;
 
->>>>>>> e9bb205ffd7bb5bcb564a6a3591819a20b1c6b3e
+    private int valoraciones;
 }
+

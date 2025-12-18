@@ -7,11 +7,8 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-<<<<<<< HEAD
 @Table(name = "resenias")
-=======
-@Table(name = "resenia")
->>>>>>> e9bb205ffd7bb5bcb564a6a3591819a20b1c6b3e
+
 public class Resenia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

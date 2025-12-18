@@ -10,14 +10,13 @@ import java.util.List;
 
 @Data
 @Entity
-<<<<<<< HEAD
+
 @Table(name = "usuarios")
-=======
-@Table(name = "usuario")
->>>>>>> e9bb205ffd7bb5bcb564a6a3591819a20b1c6b3e
+
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private long id;
     private String nombre;
     private String contraseña;

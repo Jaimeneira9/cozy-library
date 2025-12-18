@@ -16,7 +16,7 @@ public class ListaLectura {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    @Column(name = "id")
+    @Column(name = "id_lista")
     private Long id;
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion;
@@ -24,7 +24,7 @@ public class ListaLectura {
     private String nombreLista;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
     @OneToMany(mappedBy = "listaLectura")
