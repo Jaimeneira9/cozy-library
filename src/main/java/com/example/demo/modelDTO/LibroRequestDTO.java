@@ -12,6 +12,6 @@ import java.util.List;
 public class LibroRequestDTO {
     private String titulo;
     private String urlPortada;
-    private int anyoPublicacion;
+    private String anyoPublicacion;
     private List<String> autores;
 }

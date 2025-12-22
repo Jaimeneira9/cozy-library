@@ -20,7 +20,9 @@ public class Libro {
     @Column(name = "url_portada")
     private String urlPortada;
     @Column(name = "anip_publicacion")
-    private int anioPublicacion;
+    private String anioPublicacion;
+    @Column(name = "num_paginas")
+    private int numPaginas;
 
     @OneToMany(mappedBy = "libro")
     private List<AutorLibro> autores;

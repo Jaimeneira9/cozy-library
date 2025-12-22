@@ -6,22 +6,20 @@ import lombok.Data;
 
 @Data
 @Entity
-@IdClass(AutorLibroId.class)
+
 @Table(name = "autor_libro")
 public class AutorLibro {
-    @Id
-    @Column(name = "id_autor")
-    private Long id_autor;
 
-    @Id
-    @Column(name = "id_libro")
-    private Long id_libro;
+    @EmbeddedId
+    private AutorLibroId id;
 
     @ManyToOne
+    @MapsId("idAutor")
     @JoinColumn(name = "id_autor")
     private Autor autor;
 
     @ManyToOne
+    @MapsId("idLibro")
     @JoinColumn(name = "id_libro")
     private Libro libro;
 

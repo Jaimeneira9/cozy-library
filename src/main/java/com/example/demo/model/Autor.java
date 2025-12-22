@@ -17,12 +17,14 @@ public class Autor {
     private Long id;
     @Column(name = "nombre")
     private String nombre;
-    @Column(name = "fecha_nacimiento")
-    private LocalDate fechaNacimiento;
-    @Column(name = "nacionalidad")
-    private String nacionalidad;
+
 
     @OneToMany(mappedBy ="autor")
     private List<AutorLibro> libros;
+    public Autor() {}
+    // Constructor que acepta nombre
+    public Autor(String nombre) {
+        this.nombre = nombre;
+    }
 
 }

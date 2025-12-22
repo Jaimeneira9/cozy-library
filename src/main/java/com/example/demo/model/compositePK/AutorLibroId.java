@@ -1,13 +1,19 @@
 package com.example.demo.model.compositePK;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+
+import lombok.Data;
+
 
 import java.io.Serializable;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Embeddable
+@Data
 public class AutorLibroId implements Serializable {
-    private Long id_autor;
-    private Long id_libro;
+    @Column(name = "id_autor")
+    private Long idAutor;
+
+    @Column(name = "id_libro")
+    private Long idLibro;
 }
