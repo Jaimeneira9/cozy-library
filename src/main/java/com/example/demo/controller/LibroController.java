@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.modelDTO.InfoLibroDTO;
 import com.example.demo.modelDTO.LibroRequestDTO;
 import com.example.demo.service.LibroService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,20 +17,20 @@ public class LibroController {
         this.libroService=libroService;
     }
 
-    @GetMapping("/libros")
-    public List<LibroRequestDTO> buscarLibros(
-            @RequestParam(required = false) String autor,
-            @RequestParam(required = false) String titulo,
-            @RequestParam(required = false) String anio
-    ) {
-        return libroService.buscarLibros(autor, titulo, anio);
-
+    // 1. Endpoint de búsqueda híbrida (DB + Python)
+    @GetMapping("/libros/buscar")
+    public List<InfoLibroDTO> buscarLibros(@RequestParam String query) {
+        // Este método ahora hace todo el trabajo sucio:
+        // Busca en Supabase, si falta, llama a Python, limpia y combina.
+        return libroService.buscarLibrosHibrido(query);
     }
-    @PostMapping("/libros/importar")
-    public void importar(@RequestParam(required = false) String autor,
-                         @RequestParam(required = false) String titulo,
-                         @RequestParam(required = false) String palabrasClave) {
-        libroService.importarLibros(autor, titulo, palabrasClave);
+
+    // 2. Endpoint para guardar el libro que el usuario elija en Angular
+    @PostMapping("/libros/guardar")
+    public ResponseEntity<String> guardar(@RequestBody InfoLibroDTO libroDTO) {
+        // Recibimos el objeto completo desde el Front-end
+        libroService.guardarLibroSeleccionado(libroDTO);
+        return ResponseEntity.ok("Libro guardado con éxito en tu biblioteca");
     }
 
 

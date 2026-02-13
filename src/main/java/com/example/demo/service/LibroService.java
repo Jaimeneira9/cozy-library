@@ -2,11 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.model.*;
 import com.example.demo.model.compositePK.AutorLibroId;
-import com.example.demo.model.googleBooks.Item;
-import com.example.demo.model.googleBooks.VolumeInfo;
-import com.example.demo.modelDTO.GoogleBooksResponseDTO;
+
+import com.example.demo.modelDTO.InfoLibroDTO;
 import com.example.demo.modelDTO.LibroRequestDTO;
 import com.example.demo.repository.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class LibroService {
+
     private LibroRepository libroRepository;
     private GoogleBooksService googleBooksService;
     private AutorRepository autorRepository;
@@ -56,22 +58,36 @@ public class LibroService {
 
 
 
-    public List<LibroRequestDTO> buscarLibros(String autor, String titulo, String anio) {
+    public List<InfoLibroDTO> buscarLibrosHibrido(String query) {
+        // 1. Buscamos primero en nuestra base de datos (Supabase)
+        List<Libro> librosEnBD = libroRepository.findByTituloContainingIgnoreCase(query);
 
-        if (autor != null) {
-            return convertirListaDTO(libroRepository.findByAutorNombre(autor));
+        // Convertimos lo que hay en BD a InfoLibroDTO
+        List<InfoLibroDTO> resultados = librosEnBD.stream().map(libro -> {
+            InfoLibroDTO dto = new InfoLibroDTO();
+            dto.setTitulo(libro.getTitulo());
+            dto.setAnio(libro.getAnioPublicacion());
+            dto.setPortada(libro.getUrlPortada());
+            dto.setStored(true); // Marcamos que ya existe en nuestra base de datos
+            return dto;
+        }).collect(Collectors.toCollection(ArrayList::new));
+
+        // 2. Si hay pocos resultados locales, llamamos a Python para traer de Google Books
+        if (resultados.size() < 5) {
+            List<InfoLibroDTO> desdePython = googleBooksService.buscarLibrosEnPython(query);
+
+            for (InfoLibroDTO nuevo : desdePython) {
+                // Solo añadimos si no existe ya un libro con el mismo título en la lista
+                boolean yaExiste = resultados.stream()
+                        .anyMatch(r -> r.getTitulo().equalsIgnoreCase(nuevo.getTitulo()));
+
+                if (!yaExiste) {
+                    nuevo.setStored(false); // Estos no están guardados todavía
+                    resultados.add(nuevo);
+                }
+            }
         }
-
-        if (titulo != null) {
-            return convertirListaDTO(libroRepository.findByTituloContainingIgnoreCase(titulo));
-        }
-
-        if (anio != null) {
-            return convertirListaDTO(libroRepository.findByAnioPublicacion(anio));
-        }
-
-        // Si no viene ningún filtro → devolver todos
-        return convertirListaDTO(libroRepository.findAll());
+        return resultados;
     }
     //Parsea la fecha para extraer solo el año
     private int extraerAnio(String fecha) {
@@ -79,70 +95,37 @@ public class LibroService {
         return Integer.parseInt(fecha.substring(0, 4));
     }
 
-    public void importarLibros(String nombreAutor, String titulo, String palabrasClave) {
-        //Las busquedas de google se hacen en tandas de 40
-        int startIndex = 0;
-        int maxResults = 40;
-
-        // Construir query dinámicamente
-        StringBuilder query = new StringBuilder();
-        if (nombreAutor != null && !nombreAutor.isBlank()) {
-            query.append("inauthor:").append(nombreAutor.trim().replace(" ", "+"));
-        }
-        if (titulo != null && !titulo.isBlank()) {
-            if (!query.isEmpty()) query.append("+");
-            query.append("intitle:").append(titulo.trim().replace(" ", "+"));
-        }
-        if (palabrasClave != null && !palabrasClave.isBlank()) {
-            if (!query.isEmpty()) query.append("+");
-            query.append(palabrasClave.trim().replace(" ", "+"));
+    public void guardarLibroSeleccionado(InfoLibroDTO dto) {
+        // Verificación de seguridad: ¿Existe ya?
+        if (libroRepository.existsByTituloAndAnioPublicacion(dto.getTitulo(), dto.getAnio())) {
+            return;
         }
 
-        GoogleBooksResponseDTO response;
+        // Crear la entidad Libro
+        Libro libro = new Libro();
+        libro.setTitulo(dto.getTitulo());
+        libro.setAnioPublicacion(dto.getAnio());
+        libro.setUrlPortada(dto.getPortada());
+        libro = libroRepository.save(libro);
 
-        do {
-            String url = "https://www.googleapis.com/books/v1/volumes?q=" + query
-                    + "&startIndex=" + startIndex + "&maxResults=" + maxResults;
+        // Guardar Autores y relación AutorLibro
+        if (dto.getAutores() != null) {
+            for (String nombre : dto.getAutores()) {
+                Autor autor = autorRepository.findByNombreContainingIgnoreCase(nombre)
+                        .orElseGet(() -> autorRepository.save(new Autor(nombre)));
 
-            response = restTemplate.getForObject(url, GoogleBooksResponseDTO.class);
+                AutorLibro autorLibro = new AutorLibro();
+                AutorLibroId id = new AutorLibroId();
+                id.setIdAutor(autor.getId());
+                id.setIdLibro(libro.getId());
 
-            if (response.getItems() != null) {
-                for (Item item : response.getItems()) {
-                    VolumeInfo volumeInfo = item.getVolumeInfo();
+                autorLibro.setId(id);
+                autorLibro.setAutor(autor);
+                autorLibro.setLibro(libro);
 
-                    // Evitar duplicados
-                    if (volumeInfo.getTitle() == null) continue;
-                    if (libroRepository.existsByTituloAndAnioPublicacion(volumeInfo.getTitle(), volumeInfo.getPublishedDate()))
-                        continue;
-
-                    // Crear libro
-                    Libro libro = new Libro();
-                    libro.setTitulo(volumeInfo.getTitle());
-                    libro.setAnioPublicacion(volumeInfo.getPublishedDate());
-                    libro.setUrlPortada(volumeInfo.getImageLinks() != null ? volumeInfo.getImageLinks().getThumbnail() : null);
-                    libro = libroRepository.save(libro);
-
-                    // Autores
-                    if (volumeInfo.getAuthors() != null) {
-                        for (String nombre : volumeInfo.getAuthors()) {
-                            Autor autor = autorRepository.findByNombreContainingIgnoreCase(nombreAutor)
-                                    .orElseGet(() -> autorRepository.save(new Autor(nombreAutor)));
-
-                            AutorLibro autorLibro = new AutorLibro();
-                            AutorLibroId id = new AutorLibroId();
-                            id.setIdAutor(autor.getId());
-                            id.setIdLibro(libro.getId());
-                            autorLibro.setId(id);
-                            autorLibro.setAutor(autor);
-                            autorLibro.setLibro(libro);
-                            autorLibroRepository.save(autorLibro);
-                        }
-                    }
-                }
+                autorLibroRepository.save(autorLibro);
             }
-
-            startIndex += maxResults;
-        } while (response.getTotalItems() > startIndex);
+        }
     }
 
 
