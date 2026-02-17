@@ -26,7 +26,7 @@ public class AmistadService {
                 .nombre(usuario.getNombre())
                 .email(usuario.getEmail())
                 .fechaRegistro(usuario.getFechaRegistro())
-                .pathImagenPerfil(usuario.getPathImagenPerfil())
+                .pathImagenPerfil(usuario.getUrl_imagen_perfil())
                 .build();
     }
     public List<UsuarioRequestDTO> convertirListaDTO(List<Usuario> usuarios){

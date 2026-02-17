@@ -22,7 +22,7 @@ public class Usuario {
     private String contraseña;
     private LocalDateTime fechaRegistro;
     private String email;
-    private String pathImagenPerfil;
+    private String url_imagen_perfil;
 
 
     @OneToMany(mappedBy = "usuario")

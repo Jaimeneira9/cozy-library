@@ -31,16 +31,16 @@ public class UsuarioService {
 
                 .email(usuario.getEmail())
                 .fechaRegistro(usuario.getFechaRegistro())
-                .pathImagenPerfil(usuario.getPathImagenPerfil())
+                .pathImagenPerfil(usuario.getUrl_imagen_perfil())
                 .valoraciones(usuario.getResenias().size())
                 .build();
     }
     //Crear un Usuario
     @Transactional
-    public ResponseEntity<Usuario> crearUsuario(Usuario usuario){
+    public String crearUsuario(Usuario usuario){
         usuario.setFechaRegistro(LocalDateTime.now());
          usuarioRepository.save(usuario);
-         return new ResponseEntity<>(usuario, HttpStatus.OK);
+         return "Usuario creado con exito";
     }
 
 

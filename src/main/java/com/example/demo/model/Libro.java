@@ -23,6 +23,8 @@ public class Libro {
     private String anioPublicacion;
     @Column(name = "num_paginas")
     private int numPaginas;
+    @Column(name = "isbn")
+    private String isbn;
 
     @OneToMany(mappedBy = "libro")
     private List<AutorLibro> autores;
