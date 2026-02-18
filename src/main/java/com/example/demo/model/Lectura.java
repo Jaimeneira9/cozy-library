@@ -20,7 +20,8 @@ public class Lectura {
     private LocalDate fechaInicio;
     @Column(name = "fecha_fin")
     private LocalDate fechaFin;
-
+    @Column(name="paginas_actuales")
+    private int paginas_actuales;
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
