@@ -25,7 +25,10 @@ public class Lectura {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-
+    @Column(name = "estado")
+    private String estado;
+    @Column(name = "valoracion")
+    private double valoracion;
     @ManyToOne
     @JoinColumn(name = "libro_id")
     private Libro libro;

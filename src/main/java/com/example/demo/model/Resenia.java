@@ -13,8 +13,9 @@ public class Resenia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private double valoracion;
+    @Column(name = "fecha")
     private LocalDate fecha;
+    @Column(name = "comentario")
     private String comentario;
 
     @ManyToOne

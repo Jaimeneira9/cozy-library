@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -42,5 +43,26 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario2")
     private List<Amistad> amistades2;
+
+    // Este método "une" las dos listas para darte todos los amigos de verdad
+    public List<Usuario> getAmigosTotales() {
+        List<Usuario> amigos = new ArrayList<>();
+
+        // De la lista 1, el amigo es el "usuario2"
+        if (amistades1 != null) {
+            for (Amistad a : amistades1) {
+                amigos.add(a.getUsuario2());
+            }
+        }
+
+        // De la lista 2, el amigo es el "usuario1"
+        if (amistades2 != null) {
+            for (Amistad a : amistades2) {
+                amigos.add(a.getUsuario1());
+            }
+        }
+
+        return amigos;
+    }
 
 }
