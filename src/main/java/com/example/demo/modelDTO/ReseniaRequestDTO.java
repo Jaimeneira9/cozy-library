@@ -12,7 +12,7 @@ import java.util.List;
 public class ReseniaRequestDTO {
     private Long idLibro;
     private Long idUsuario;
-
+    private String googleId;
     // Información para mostrar
     private String tituloLibro;
     private List<String> nombresAutores;

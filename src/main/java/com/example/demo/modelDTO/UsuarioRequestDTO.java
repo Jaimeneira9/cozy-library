@@ -12,7 +12,7 @@ public class UsuarioRequestDTO {
 
     private LocalDateTime fechaRegistro;
     private String email;
-    private String pathImagenPerfil;
+    private String url_imagen_perfil;
 
     private int valoraciones;
 }

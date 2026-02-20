@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/lecturas")
-@CrossOrigin(origins = "*") // Permite que Angular se conecte
+
 public class LecturaController {
 
     @Autowired

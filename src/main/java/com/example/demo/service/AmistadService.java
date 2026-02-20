@@ -1,16 +1,14 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Amistad;
 import com.example.demo.model.Usuario;
 import com.example.demo.modelDTO.UsuarioRequestDTO;
 import com.example.demo.repository.AmistadRepository;
 import com.example.demo.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
-
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +24,7 @@ public class AmistadService {
                 .nombre(usuario.getNombre())
                 .email(usuario.getEmail())
                 .fechaRegistro(usuario.getFechaRegistro())
-                .pathImagenPerfil(usuario.getUrl_imagen_perfil())
+                .url_imagen_perfil(usuario.getUrl_imagen_perfil())
                 .build();
     }
     public List<UsuarioRequestDTO> convertirListaDTO(List<Usuario> usuarios){
@@ -35,14 +33,9 @@ public class AmistadService {
     //Mostrar Amigos
     @Transactional
     public List<UsuarioRequestDTO> mostrarAmigos(long idUsuario){
-            List<Usuario> amigos = new ArrayList<>();
-            for(Amistad a: amistadRepository.findByUsuario1Id(idUsuario)){
-                amigos.add(a.getUsuario2());
-            }
-        for(Amistad a: amistadRepository.findByUsuario2Id(idUsuario)){
-            amigos.add(a.getUsuario1());
-        }
-        return convertirListaDTO(amigos);
+        Optional<Usuario> usuario = usuarioRepository.findById(idUsuario);
+        Usuario usuarioExiste = usuario.get();
+        return usuarioExiste.getAmigosTotales().size()>0 ? convertirListaDTO(usuarioExiste.getAmigosTotales()) : null;
 
     }
     //Eliminar Amigos

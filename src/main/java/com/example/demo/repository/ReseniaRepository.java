@@ -13,4 +13,6 @@ public interface ReseniaRepository extends JpaRepository<Resenia,Long> {
     // Obtener todas las reseñas de un libro específico
     List<Resenia> findByLibroId(Long libroId);
 
+
+
 }

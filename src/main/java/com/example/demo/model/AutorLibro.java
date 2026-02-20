@@ -23,4 +23,5 @@ public class AutorLibro {
     @JoinColumn(name = "id_libro")
     private Libro libro;
 
+
 }

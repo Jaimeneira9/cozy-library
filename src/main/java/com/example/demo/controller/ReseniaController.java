@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RequestMapping("/api/resenias")
+
 @RestController
 public class ReseniaController {
     @Autowired
@@ -18,7 +20,7 @@ public class ReseniaController {
     @PostMapping("/publicar")
     public ResponseEntity<ReseniaRequestDTO> publicar(@RequestBody ReseniaRequestDTO reseniaDto) {
         // El service ahora devuelve el DTO que tú tienes creado
-        return ResponseEntity.ok(reseniaService.crearResenia(reseniaDto));
+        return ResponseEntity.ok(reseniaService.guardarResenia(reseniaDto));
     }
 
     // El Muro de Amigos (Figma): GET /api/resenias/muro/1

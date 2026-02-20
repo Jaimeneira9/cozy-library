@@ -25,7 +25,8 @@ public class Libro {
     private int numPaginas;
     @Column(name = "isbn")
     private String isbn;
-
+    @Column(name = "google_id")
+    private String googleId;
     @OneToMany(mappedBy = "libro")
     private List<AutorLibro> autores;
 

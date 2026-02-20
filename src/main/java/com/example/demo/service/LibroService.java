@@ -1,12 +1,13 @@
 package com.example.demo.service;
 
-import com.example.demo.model.*;
+import com.example.demo.model.Autor;
+import com.example.demo.model.AutorLibro;
+import com.example.demo.model.Libro;
 import com.example.demo.model.compositePK.AutorLibroId;
-
 import com.example.demo.modelDTO.InfoLibroDTO;
-import com.example.demo.modelDTO.LibroRequestDTO;
-import com.example.demo.repository.*;
-import org.springframework.beans.factory.annotation.Value;
+import com.example.demo.repository.AutorLibroRepository;
+import com.example.demo.repository.AutorRepository;
+import com.example.demo.repository.LibroRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,24 +37,7 @@ public class LibroService {
 
     }
 
-    public LibroRequestDTO mapToRequestDTO(Libro libro){
-            List<AutorLibro> autoresLibro = libro.getAutores();
-            List<String> nombreAutores = new ArrayList<>();
-            for(AutorLibro autorLibro:autoresLibro){
-                nombreAutores.add(autorLibro.getAutor().getNombre());
-            }
-        return LibroRequestDTO.builder()
-                .titulo(libro.getTitulo())
-                .anyoPublicacion(libro.getAnioPublicacion())
-                .urlPortada(libro.getUrlPortada())
-                .autores(nombreAutores)
-                .build();
-    }
-    public List<LibroRequestDTO> convertirListaDTO(List<Libro> libros){
-        return libros.stream()
-                .map(this::mapToRequestDTO)
-                .collect(Collectors.toList());
-    }
+
 
 
 
@@ -66,6 +50,7 @@ public class LibroService {
         List<InfoLibroDTO> resultados = librosEnBD.stream().map(libro -> {
             InfoLibroDTO dto = new InfoLibroDTO();
             dto.setTitulo(libro.getTitulo());
+            dto.setGoogleId(libro.getGoogleId());
             dto.setAnio(libro.getAnioPublicacion());
             dto.setPortada(libro.getUrlPortada());
             dto.setStored(true); // Marcamos que ya existe en nuestra base de datos

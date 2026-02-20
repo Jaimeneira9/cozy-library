@@ -1,19 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Usuario;
-import com.example.demo.model.compositePK.SolicitaAmistad;
-import com.example.demo.modelDTO.SolicitaAmistadRequestDTO;
 import com.example.demo.modelDTO.UsuarioRequestDTO;
 import com.example.demo.repository.ReseniaRepository;
-import com.example.demo.repository.SolicitaAmistadRepository;
 import com.example.demo.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -31,7 +25,7 @@ public class UsuarioService {
 
                 .email(usuario.getEmail())
                 .fechaRegistro(usuario.getFechaRegistro())
-                .pathImagenPerfil(usuario.getUrl_imagen_perfil())
+                .url_imagen_perfil(usuario.getUrl_imagen_perfil())
                 .valoraciones(usuario.getResenias().size())
                 .build();
     }
