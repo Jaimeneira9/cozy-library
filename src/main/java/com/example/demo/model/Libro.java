@@ -19,7 +19,7 @@ public class Libro {
     private String titulo;
     @Column(name = "url_portada")
     private String urlPortada;
-    @Column(name = "anip_publicacion")
+    @Column(name = "anio_publicacion")
     private String anioPublicacion;
     @Column(name = "num_paginas")
     private int numPaginas;
