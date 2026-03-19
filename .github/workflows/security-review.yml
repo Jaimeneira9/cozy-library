@@ -44,7 +44,8 @@ jobs:
               }]
             }")
 
-          CONTENT=$(echo "$RESPONSE" | python3 -c "import sys,json; data=json.load(sys.stdin); print(data['content'][0]['text'])" 2>/dev/null || echo "Error al procesar respuesta")
+          echo "API Response: $RESPONSE"
+CONTENT=$(echo "$RESPONSE" | python3 -c "import sys,json; data=json.load(sys.stdin); print(data['content'][0]['text'])" 2>&1 || echo "Error al procesar respuesta")
           
           echo "review_content<<EOF" >> $GITHUB_OUTPUT
           echo "$CONTENT" >> $GITHUB_OUTPUT
