@@ -13,7 +13,7 @@ def buscar_en_google(q: str):
         data = response.json()
     except Exception as e:
         return {"error": "Error al conectar con Google Books"}
-    
+    # test CI
     libros_limpios = []
     
     for item in data.get("items", []):
