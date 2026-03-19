@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-
+// test CI
 @Data
 @Entity
 @Table(name="amistades")
