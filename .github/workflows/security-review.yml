@@ -1,0 +1,78 @@
+name: Security Review with Claude
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [master]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  security-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
+          echo "diff_size=$(wc -c < pr_diff.txt)" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Security Review
+        id: review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          DIFF=$(cat pr_diff.txt | head -c 15000)  # límite de tokens
+
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -d "{
+              \"model\": \"claude-sonnet-4-20250514\",
+              \"max_tokens\": 2000,
+              \"messages\": [{
+                \"role\": \"user\",
+                \"content\": \"Eres un experto en seguridad. Analiza este diff de una PR de un proyecto con backend Java (Spring Boot), frontend TypeScript (Angular) y un servicio Python. Busca vulnerabilidades OWASP Top 10: inyección SQL, XSS, autenticación rota, exposición de datos sensibles, XXE, control de acceso, mala configuración de seguridad, deserialización insegura, componentes vulnerables, logging insuficiente. Si no encuentras ningún problema grave, di APPROVED. Si encuentras problemas, empieza con CHANGES_REQUESTED y lista los problemas concretos con el archivo y línea afectada. Diff:\\n\\n$DIFF\"
+              }]
+            }")
+
+          CONTENT=$(echo "$RESPONSE" | python3 -c "import sys,json; data=json.load(sys.stdin); print(data['content'][0]['text'])" 2>/dev/null || echo "Error al procesar respuesta")
+          
+          echo "review_content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          if echo "$CONTENT" | grep -q "CHANGES_REQUESTED"; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+          else
+            echo "status=passed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const review = `${{ steps.review.outputs.review_content }}`;
+            const status = '${{ steps.review.outputs.status }}';
+            const icon = status === 'passed' ? '✅' : '🚨';
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## ${icon} Claude Security Review\n\n${review}\n\n---\n*Análisis automático OWASP Top 10*`
+            });
+
+      - name: Fail if issues found
+        if: steps.review.outputs.status == 'failed'
+        run: |
+          echo "❌ Claude encontró vulnerabilidades de seguridad. Revisa los comentarios de la PR."
+          exit 1
