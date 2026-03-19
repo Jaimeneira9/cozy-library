@@ -1,87 +1,22 @@
-name: Security Review with Claude
+name: Security Review
+
+permissions:
+  pull-requests: write  # Needed for leaving PR comments
+  contents: read
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [master]
-
-permissions:
-  contents: read
-  pull-requests: write
 
 jobs:
-  security-review:
+  security:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
-      - name: Get PR diff
-        id: diff
-        run: |
-          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
-
-      - name: Run Claude Security Review
-        id: review
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          DIFF=$(cat pr_diff.txt | head -c 15000)
-          PROMPT="Eres un experto en seguridad. Analiza este diff de una PR de un proyecto con backend Java (Spring Boot), frontend TypeScript (Angular) y un servicio Python. Busca vulnerabilidades OWASP Top 10: inyeccion SQL, XSS, autenticacion rota, exposicion de datos sensibles, XXE, control de acceso, mala configuracion de seguridad, deserializacion insegura, componentes vulnerables, logging insuficiente. Si no encuentras ningun problema grave, di APPROVED. Si encuentras problemas, empieza con CHANGES_REQUESTED y lista los problemas concretos con el archivo y linea afectada."
-
-          BODY=$(jq -n \
-            --arg prompt "$PROMPT" \
-            --arg diff "$DIFF" \
-            '{
-              model: "claude-sonnet-4-20250514",
-              max_tokens: 2000,
-              messages: [{
-                role: "user",
-                content: ($prompt + "\n\nDiff:\n\n" + $diff)
-              }]
-            }')
-
-          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
-            -H "Content-Type: application/json" \
-            -H "x-api-key: $ANTHROPIC_API_KEY" \
-            -H "anthropic-version: 2023-06-01" \
-            -d "$BODY")
-
-          echo "API Response: $RESPONSE"
-
-          CONTENT=$(echo "$RESPONSE" | python3 -c "import sys,json; data=json.load(sys.stdin); print(data['content'][0]['text'])" 2>&1 || echo "Error al procesar respuesta")
-
-          echo "review_content<<EOF" >> $GITHUB_OUTPUT
-          echo "$CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-          if echo "$CONTENT" | grep -q "CHANGES_REQUESTED"; then
-            echo "status=failed" >> $GITHUB_OUTPUT
-          else
-            echo "status=passed" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Comment on PR
-        uses: actions/github-script@v7
-        env: 
-          REVIEW_CONTENT: ${{ steps.review.outputs.review_content }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
+      
+      - uses: anthropics/claude-code-security-review@main
         with:
-          script: |
-            const review = process.env.REVIEW_CONTENT;
-            const status = '${{ steps.review.outputs.status }}';
-            const icon = status === 'passed' ? '✅' : '🚨';
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `## ${icon} Claude Security Review\n\n${review}\n\n---\n*Análisis automático OWASP Top 10*`
-            });
-
-      - name: Fail if issues found
-        if: steps.review.outputs.status == 'failed'
-        run: |
-          echo "Claude encontró vulnerabilidades de seguridad. Revisa los comentarios de la PR."
-          exit 1
+          comment-pr: true
+          claude-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
