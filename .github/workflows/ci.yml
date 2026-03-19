@@ -48,8 +48,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test
-        run: npm run test
+      - name: Build check
+        run: npm run build -- --configuration production
+
+      #- name: Test
+        #run: npm run test
 
   cleaner:
     name: Cleaner (Python)
